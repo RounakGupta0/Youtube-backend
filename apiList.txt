@@ -1,0 +1,34 @@
+API LIST 
+
+1. /user
+
+/signup   ,to create a channel
+/login    , to login on the app
+/subscribe   ,to subscribe a particular channel  (takes channelId in params)
+/unsubscribe   ,to unsubscribe a particular channel (takes channelId in params)
+/uploadProfilePic   , to upload a profile pic
+/uploadCoverPic  , to upload a ProfileCoverPic
+/watchLater    , to add to watch Later (takes videoId in params)
+
+
+2. /video
+
+/uploadVideo   , to upload a Video on the channel
+/uploadThumbnail, to update Thumbnail on the channel ( needs videoId on the params)
+/like   , a toggle API to like a particular video (needs videoId in params)
+/dislike   , a toggle API to dislike a praticula video (needs a videoId in parmas)
+/byvideoId   , to get a video by the video Id 
+/allVideo, to get all Videos
+/byChannelId  , to get videos through channelId
+/updateVideo  , to update the information in the video
+/deleteById   , to delete a particular video by videoId
+/trendingVideo  , to get the tranding videos on the platform (only top 10 videos)
+
+3. /comment
+
+/uploadComment  , to add a comment in the video (takes videoId in params)
+/commentsByVideoId  , to get comments of the particular video
+/commentBycommentId , to get a comment by commentId (no use for now)
+/editComment , to edit a comment 
+/like , a toggle API to like a particular comment (takes commentID on params)
+/byId , a delete API to delete a particula comment (video owner can also delete)
