@@ -8,6 +8,7 @@ const videoRoute = require('./Routes/video')
 const commentRoute = require('./Routes/comment')
 const fileupload = require('express-fileupload')
 const connectDB = require('./configure/mongoDB')
+const cors = require('cors')
 
 connectDB()
 
