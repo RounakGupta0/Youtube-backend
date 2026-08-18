@@ -70,6 +70,8 @@ const login = async (req, res) => {
             })
 
         res.status(200).json({
+            channelName: checkEmail.channelName,
+            channelId : checkEmail._id,
             token: token
         })
     }
