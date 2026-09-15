@@ -37,7 +37,7 @@ const uploadVideo = async (req, res) => {
             thumbnailUrl: uploadedThumbnail.secure_url,
             thumbnailPublicId: uploadedThumbnail.public_id,
             uploadedBy: tokenData._id,
-            tags: req.body.tags,
+            tags: JSON.parse(req.body.tags),
             category: req.body.category
         })
 
@@ -297,7 +297,7 @@ const editVideo = async (req, res) => {
             description: req.body.description,
             thumbnailUrl: video.thumbnailUrl,
             thumbnailPublicId: video.thumbnailPublicId,
-            tags: req.body.tags,
+            tags: JSON.parse(req.body.tags),
             category: req.body.category,
             views: video.views,
             likeUsers: video.likeUsers,
