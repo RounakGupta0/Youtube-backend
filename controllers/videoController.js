@@ -226,7 +226,7 @@ const videoById = async (req, res) => {
 
 const allVideos = async (req, res) => {
     try {
-        const videos = await Video.find().select('_id title thumbnailUrl views').populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
+        const videos = await Video.find().populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
 
         if (videos.length == 0) {
             return res.status(401).json({
