@@ -383,31 +383,34 @@ const likeDislikestatus = async (req, res) => {
     try {
         const videoId = req.params.videoId
         
-        let video = await Video.findById(videoId).populate('uploadedBy', 'subscribers')
+        let video = await Video.findById(videoId).select('_id title description videoUrl views likeCount dislikeCount tags category createdAt thumbnailUrl ').populate('uploadedBy', '_id channelName profilePicUrl ')
 
-        if (req.headers.authorization.split(' ')[1])
+        if (req.headers.authorization?.split(' ')[1])
         {
             const token = req.headers.authorization.split(' ')[1]
             const tokenData = jwt.verify(token, process.env.SEC_KEY)
             const userId = tokenData._id
 
+            let videoData = await Video.findById(videoId).populate('uploadedBy', 'subscribers')
+
             let subscribeStatus = false
 
-            const isSubscribed = video.uploadedBy.subscribers.includes(userId)
+            const isSubscribed = videoData.uploadedBy.subscribers.includes(userId)
             if (isSubscribed) {
                 subscribeStatus = true
             }
 
-            const checkLike = video.likeUsers.includes(userId)
+            const checkLike = videoData.likeUsers.includes(userId)
             if (checkLike) {
                 return res.status(200).json({
+                    video : video,
                     likeStatus: true,
                     dislikeStatus: false,
                     subscribeStatus: subscribeStatus
                 })
             }
 
-            const checkDislike = video.dislikeUsers.includes(userId)
+            const checkDislike = videoData.dislikeUsers.includes(userId)
             if (checkDislike) {
                 return res.status(200).json({
                     video : video,
