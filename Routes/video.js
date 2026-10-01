@@ -1,6 +1,6 @@
 const express = require('express')
 const Router = express.Router()
-const {uploadVideo,uploadThumbnail,like,dislike,videoById,allVideos,byChannelId,editVideo,deleteById,trendingVideo} = require('../controllers/videoController')
+const {uploadVideo,uploadThumbnail,like,dislike,videoById,allVideos,byChannelId,editVideo,deleteById,trendingVideo,likeDislikestatus} = require('../controllers/videoController')
 
 Router.post('/uploadVideo',uploadVideo)
 Router.patch('/uploadThumbnail/:videoId',uploadThumbnail)
@@ -12,5 +12,6 @@ Router.get('/byChannelId/:channelId',byChannelId)
 Router.put('/updateVideo/:videoId',editVideo)
 Router.delete('/deleteById/:videoId',deleteById)
 Router.get('/trendingVideo',trendingVideo)
+Router.get('/likeDislikeStatus/:videoId',likeDislikestatus)
 
 module.exports = Router

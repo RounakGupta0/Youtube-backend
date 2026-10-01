@@ -1,6 +1,7 @@
 const Video = require('../model/Video')
 const jwt = require('jsonwebtoken')
 const cloudinary = require('../configure/cloudinary')
+const { subscribe } = require('../Routes/video')
 
 const uploadVideo = async (req, res) => {
     try {
@@ -206,7 +207,7 @@ const dislike = async (req, res) => {
 const videoById = async (req, res) => {
     try {
         const videoId = req.params.videoId
-        const video = await Video.findById(videoId).populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
+        const video = await Video.findById(videoId).select('_id title description videoUrl videoPublicId views likeCount dislikeCount tags category createdAt').populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
         if (!video) {
             return res.status(401).json({
                 msg: 'Video Not Found'
@@ -226,7 +227,7 @@ const videoById = async (req, res) => {
 
 const allVideos = async (req, res) => {
     try {
-        const videos = await Video.find().populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
+        const videos = await Video.find().select('_id title description videoUrl views likeCount dislikeCount tags category createdAt thumbnailUrl ').populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
 
         if (videos.length == 0) {
             return res.status(401).json({
@@ -250,7 +251,7 @@ const byChannelId = async (req, res) => {
     try {
         const channelId = req.params.channelId
 
-        const videos = await Video.find({ uploadedBy: channelId }).select('_id title thumbnailUrl views').populate('uploadedBy', '_id profilePicUrl channelName subscriberCount')
+        const videos = await Video.find({ uploadedBy: channelId }).select('_id title description videoUrl views likeCount dislikeCount tags category createdAt thumbnailUrl ').populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
         if (videos.length == 0) {
             return res.status(401).json({
                 msg: 'No video Uploaded Till now on this channel'
@@ -378,5 +379,65 @@ const trendingVideo = async (req, res) => {
 }
 
 
+const likeDislikestatus = async (req, res) => {
+    try {
+        const videoId = req.params.videoId
+        
+        let video = await Video.findById(videoId).populate('uploadedBy', 'subscribers')
 
-module.exports = { uploadVideo, uploadThumbnail, like, dislike, videoById, allVideos, byChannelId, editVideo, deleteById, trendingVideo }
+        if (req.headers.authorization.split(' ')[1])
+        {
+            const token = req.headers.authorization.split(' ')[1]
+            const tokenData = jwt.verify(token, process.env.SEC_KEY)
+            const userId = tokenData._id
+
+            let subscribeStatus = false
+
+            const isSubscribed = video.uploadedBy.subscribers.includes(userId)
+            if (isSubscribed) {
+                subscribeStatus = true
+            }
+
+            const checkLike = video.likeUsers.includes(userId)
+            if (checkLike) {
+                return res.status(200).json({
+                    likeStatus: true,
+                    dislikeStatus: false,
+                    subscribeStatus: subscribeStatus
+                })
+            }
+
+            const checkDislike = video.dislikeUsers.includes(userId)
+            if (checkDislike) {
+                return res.status(200).json({
+                    video : video,
+                    dislikeStatus: true,
+                    likeStatus: false,
+                    subscribeStatus: subscribeStatus
+                })
+            }
+
+            return res.status(200).json({
+                video: video,
+                likeStatus: false,
+                dislikeStatus: false,
+                subscribeStatus : subscribeStatus
+            })
+
+        }
+        else {
+            return res.status(200).json({
+                video : video,
+                likeStatus: false,
+                dislikeStatus: false,
+                subscribeStatus : false
+            })
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+
+
+module.exports = { uploadVideo, uploadThumbnail, like, dislike, videoById, allVideos, byChannelId, editVideo, deleteById, trendingVideo, likeDislikestatus }
