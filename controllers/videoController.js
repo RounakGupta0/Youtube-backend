@@ -392,7 +392,7 @@ const likeDislikestatus = async (req, res) => {
         video.views += 1
         await video.save()
 
-        if (req.headers.authorization?.split(' ')[1]) {
+        if (req.headers.authorization) {
             const token = req.headers.authorization.split(' ')[1]
             const tokenData = jwt.verify(token, process.env.SEC_KEY)
             const userId = tokenData._id
