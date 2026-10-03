@@ -44,7 +44,7 @@ const commentsByVideoId = async (req, res) => {
 
         const comments = await Comment.find({ videoId: videoId }).populate('commentBy', '_id channelName profilePicUrl')
         if (comments.length == 0) {
-            return res.status(400).json({
+            return res.status(200).json({
                 msg: 'No comments till Now for this Video'
             })
         }
