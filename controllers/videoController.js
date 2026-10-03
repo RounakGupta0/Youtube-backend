@@ -132,7 +132,8 @@ const like = async (req, res) => {
 
             return res.status(200).json({
                 msg: 'Like Removed',
-                likeCount: video.likeCount
+                likeCount: video.likeCount,
+                likeStatus : false
             })
         }
 
@@ -147,6 +148,7 @@ const like = async (req, res) => {
         res.status(200).json({
             msg: 'Video Liked',
             likeCount: savedVideo.likeCount,
+            likeStatus : true
         })
     }
     catch (err) {
@@ -178,7 +180,8 @@ const dislike = async (req, res) => {
 
             return res.status(200).json({
                 msg: 'dislike Removed',
-                dislikeCount: video.dislikeCount
+                dislikeCount: video.dislikeCount,
+                dislikeStatus : false
             })
         }
 
@@ -193,7 +196,8 @@ const dislike = async (req, res) => {
 
         res.status(200).json({
             msg: 'Video Disliked',
-            dislikeCount: savedVideo.dislikeCount
+            dislikeCount: savedVideo.dislikeCount,
+            dislikeStatus : true
         })
     }
     catch (err) {
