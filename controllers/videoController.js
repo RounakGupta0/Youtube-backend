@@ -382,11 +382,17 @@ const trendingVideo = async (req, res) => {
 const likeDislikestatus = async (req, res) => {
     try {
         const videoId = req.params.videoId
-        
-        let video = await Video.findById(videoId).select('_id title description videoUrl views likeCount dislikeCount tags category createdAt thumbnailUrl ').populate('uploadedBy', '_id channelName profilePicUrl ')
 
-        if (req.headers.authorization?.split(' ')[1])
-        {
+        let video = await Video.findById(videoId).select('_id title description videoUrl views likeCount dislikeCount tags category createdAt thumbnailUrl ').populate('uploadedBy', '_id channelName profilePicUrl ')
+        if (!video) {
+            return res.status(401).json({
+                msg: 'Video Not Found'
+            })
+        }
+        video.views += 1
+        await video.save()
+
+        if (req.headers.authorization?.split(' ')[1]) {
             const token = req.headers.authorization.split(' ')[1]
             const tokenData = jwt.verify(token, process.env.SEC_KEY)
             const userId = tokenData._id
@@ -403,7 +409,7 @@ const likeDislikestatus = async (req, res) => {
             const checkLike = videoData.likeUsers.includes(userId)
             if (checkLike) {
                 return res.status(200).json({
-                    video : video,
+                    video: video,
                     likeStatus: true,
                     dislikeStatus: false,
                     subscribeStatus: subscribeStatus
@@ -413,7 +419,7 @@ const likeDislikestatus = async (req, res) => {
             const checkDislike = videoData.dislikeUsers.includes(userId)
             if (checkDislike) {
                 return res.status(200).json({
-                    video : video,
+                    video: video,
                     dislikeStatus: true,
                     likeStatus: false,
                     subscribeStatus: subscribeStatus
@@ -424,16 +430,16 @@ const likeDislikestatus = async (req, res) => {
                 video: video,
                 likeStatus: false,
                 dislikeStatus: false,
-                subscribeStatus : subscribeStatus
+                subscribeStatus: subscribeStatus
             })
 
         }
         else {
             return res.status(200).json({
-                video : video,
+                video: video,
                 likeStatus: false,
                 dislikeStatus: false,
-                subscribeStatus : false
+                subscribeStatus: false
             })
         }
     }

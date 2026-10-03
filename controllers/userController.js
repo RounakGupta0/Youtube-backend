@@ -114,8 +114,8 @@ const subscribe = async (req, res) => {
         channel.subscriberCount += 1
         await channel.save()
 
-        console.log(channelId)
-        console.log(channel._id)
+        // console.log(channelId)
+        // console.log(channel._id)
 
         console.log(tokenData._id)
         const user = await User.findById(tokenData._id)
@@ -125,7 +125,8 @@ const subscribe = async (req, res) => {
 
         res.status(200).json({
             msg: 'Subscribed',
-            subscriberCount: channel.subscriberCount
+            subscriberCount: channel.subscriberCount,
+            subscribeStatus : true
         })
 
     }
@@ -169,7 +170,8 @@ const unsubscribe = async (req, res) => {
 
         res.status(200).json({
             msg: 'Unsubscribed',
-            subscriberCount: channel.subscriberCount
+            subscriberCount: channel.subscriberCount,
+            subscribeStatus: false
         })
     }
     catch (err) {
