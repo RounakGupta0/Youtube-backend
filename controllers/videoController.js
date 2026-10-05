@@ -181,6 +181,7 @@ const dislike = async (req, res) => {
             return res.status(200).json({
                 msg: 'dislike Removed',
                 dislikeCount: video.dislikeCount,
+                likeCount : savedVideo.likeCount,
                 dislikeStatus : false
             })
         }
