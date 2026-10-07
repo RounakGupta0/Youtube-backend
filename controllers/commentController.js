@@ -203,7 +203,7 @@ const deleteById = async (req, res) => {
 const commentLikeStatus = async (req, res) => {
     try {
         const videoId = req.params.videoId
-        var comments = await Comment.find({ videoId: videoId }).select('-likedBy')
+        var comments = await Comment.find({ videoId: videoId }).select('-likedBy -dislikedBy').populate('commentBy', '_id channelName profilePicUrl')
         // console.log(comments)
         var newCommentLikes = []
         if (req.headers.authorization) {
@@ -211,20 +211,23 @@ const commentLikeStatus = async (req, res) => {
             const tokenData = jwt.verify(token, process.env.SEC_KEY)
             const userId = tokenData._id
 
-            const newComments = await Comment.find({ videoId: videoId })
+            // console.log( ' ye function call hua hai')
+
+            const newComments = await Comment.find({ videoId: videoId }).populate('commentBy', '_id channelName profilePicUrl')
+            // console.log(comments)
             // console.log(newComments.likedBy)
 
 
             newCommentLikes = await newComments.map(comment => (
                 {
-                    ...comment,
-                    isLike: comment.likedBy.some(c => c.commentBy.toString() === userId.toString()),
-                    isDislike : comment.likedBy.some(c => c.commentBy.toString() === userId.toString())
+                    ...comment._doc,
+                    isLike: comment.likedBy.some(c => c.toString() === userId.toString()),
+                    isDislike: comment.dislikedBy.some(c => c.toString() === userId.toString())
                 }
             ))
 
             newCommentLikes.map(comment => {
-                const {likedBy, dislikedBy , ...rest} = comment
+                const { likedBy, dislikedBy, ...rest } = comment
                 return rest
             })
 
@@ -234,9 +237,9 @@ const commentLikeStatus = async (req, res) => {
         else {
             newCommentLikes = await comments.map(comment => (
                 {
-                    ...comment,
+                    ...comment._doc,
                     isLike: false,
-                    isDislike : false
+                    isDislike: false
                 }
             ))
             // console.log(newCommentLikes)
