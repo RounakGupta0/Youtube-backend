@@ -226,12 +226,12 @@ const commentLikeStatus = async (req, res) => {
                 }
             ))
 
-            newCommentLikes.map(comment => {
+            newCommentLikes = newCommentLikes.map(comment => {
                 const { likedBy, dislikedBy, ...rest } = comment
                 return rest
             })
 
-            console.log(newCommentLikes)
+            // console.log(newCommentLikes)
 
         }
         else {
