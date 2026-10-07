@@ -20,10 +20,25 @@ const commentSchema = new mongoose.Schema({
         maxlength: 1000
     },
 
-    likes: [{
+    likedBy: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     }],
+
+    likeCount: {
+        type: String,
+        default : 0
+    },
+
+    dislikedBy: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
+
+    dislikeCount: {
+        type: String,
+        default : 0
+    },
 
     parentComment: {
         type: mongoose.Schema.Types.ObjectId,

@@ -45,7 +45,7 @@ const commentsByVideoId = async (req, res) => {
         const comments = await Comment.find({ videoId: videoId }).populate('commentBy', '_id channelName profilePicUrl')
         if (comments.length == 0) {
             return res.status(200).json({
-                comments : []
+                comments: []
             })
         }
 
@@ -138,15 +138,15 @@ const likeUnlike = async (req, res) => {
             })
         }
 
-        if (comment.likes.includes(userId)) {
-            comment.likes.pull(userId)
+        if (comment.likedBy.includes(userId)) {
+            comment.likedBy.pull(userId)
             await comment.save()
             return res.status(200).json({
                 msg: 'Like Removed'
             })
         }
 
-        comment.likes.push(userId)
+        comment.likedBy.push(userId)
         await comment.save()
         return res.status(200).json({
             msg: 'Like Success'
@@ -200,5 +200,56 @@ const deleteById = async (req, res) => {
     }
 }
 
+const commentLikeStatus = async (req, res) => {
+    try {
+        const videoId = req.params.videoId
+        var comments = await Comment.find({ videoId: videoId }).select('-likedBy')
+        // console.log(comments)
+        var newCommentLikes = []
+        if (req.headers.authorization) {
+            const token = req.headers.authorization.split(' ')[1]
+            const tokenData = jwt.verify(token, process.env.SEC_KEY)
+            const userId = tokenData._id
 
-module.exports = { uploadComment, commentsByVideoId, commentBycommentId, editComment, likeUnlike, deleteById }
+            const newComments = await Comment.find({ videoId: videoId })
+            // console.log(newComments.likedBy)
+
+
+            newCommentLikes = await newComments.map(comment => (
+                {
+                    ...comment,
+                    isLike: comment.likedBy.some(c => c.commentBy.toString() === userId.toString()),
+                    isDislike : comment.likedBy.some(c => c.commentBy.toString() === userId.toString())
+                }
+            ))
+
+            newCommentLikes.map(comment => {
+                const {likedBy, dislikedBy , ...rest} = comment
+                return rest
+            })
+
+            console.log(newCommentLikes)
+
+        }
+        else {
+            newCommentLikes = await comments.map(comment => (
+                {
+                    ...comment,
+                    isLike: false,
+                    isDislike : false
+                }
+            ))
+            // console.log(newCommentLikes)
+        }
+
+        return res.status(200).json({
+            comments: newCommentLikes
+        })
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+
+
+module.exports = { uploadComment, commentsByVideoId, commentBycommentId, editComment, likeUnlike, deleteById, commentLikeStatus }
