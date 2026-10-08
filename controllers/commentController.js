@@ -302,4 +302,4 @@ const commentLikeStatus = async (req, res) => {
 }
 
 
-module.exports = { uploadComment, commentsByVideoId, commentBycommentId, editComment, likeUnlike, deleteById, commentLikeStatus }
+module.exports = { uploadComment, commentsByVideoId, commentBycommentId, editComment, likeUnlike ,dislikeUndislike, deleteById, commentLikeStatus }
