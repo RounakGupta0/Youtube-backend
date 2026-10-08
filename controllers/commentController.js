@@ -140,6 +140,7 @@ const likeUnlike = async (req, res) => {
 
         if (comment.likedBy.includes(userId)) {
             comment.likedBy.pull(userId)
+            comment.likeCount -=1
             await comment.save()
             return res.status(200).json({
                 msg: 'Like Removed',
@@ -147,6 +148,8 @@ const likeUnlike = async (req, res) => {
                 dislikeStatus : comment.dislikedBy.includes(userId)
             })
         }
+
+        comment.likeCount += 1
 
         comment.likedBy.push(userId)
         await comment.save()
@@ -180,6 +183,7 @@ const dislikeUndislike = async (req, res) => {
 
         if (comment.dislikedBy.includes(userId)) {
             comment.dislikedBy.pull(userId)
+            comment.dislikeCount -= 1
             await comment.save()
             return res.status(200).json({
                 msg: 'dislike Removed',
@@ -189,6 +193,7 @@ const dislikeUndislike = async (req, res) => {
         }
 
         comment.dislikedBy.push(userId)
+        comment.dislikeCount += 1
         await comment.save()
         return res.status(200).json({
             msg: 'dislike Success',
