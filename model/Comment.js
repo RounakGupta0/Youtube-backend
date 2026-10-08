@@ -26,7 +26,7 @@ const commentSchema = new mongoose.Schema({
     }],
 
     likeCount: {
-        type: String,
+        type: Number,
         default : 0
     },
 
@@ -36,7 +36,7 @@ const commentSchema = new mongoose.Schema({
     }],
 
     dislikeCount: {
-        type: String,
+        type: Number,
         default : 0
     },
 
