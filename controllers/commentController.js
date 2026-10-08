@@ -142,14 +142,18 @@ const likeUnlike = async (req, res) => {
             comment.likedBy.pull(userId)
             await comment.save()
             return res.status(200).json({
-                msg: 'Like Removed'
+                msg: 'Like Removed',
+                likeStatus : false,
+                dislikeStatus : comment.dislikedBy.includes(userId)
             })
         }
 
         comment.likedBy.push(userId)
         await comment.save()
         return res.status(200).json({
-            msg: 'Like Success'
+            msg: 'Like Success',
+            likeStatus : true,
+            dislikeStatus : comment.dislikedBy.includes(userId)
         })
     }
     catch (err) {
@@ -159,6 +163,47 @@ const likeUnlike = async (req, res) => {
         })
     }
 }
+
+const dislikeUndislike = async (req, res) => {
+    try {
+        const commentId = req.params.commentId
+        const token = req.headers.authorization.split(' ')[1]
+        const tokenData = jwt.verify(token, process.env.SEC_KEY)
+        const userId = tokenData._id
+
+        const comment = await Comment.findById(commentId)
+        if (!comment) {
+            return res.status(401).json({
+                msg: 'Comment Not Found'
+            })
+        }
+
+        if (comment.dislikedBy.includes(userId)) {
+            comment.dislikedBy.pull(userId)
+            await comment.save()
+            return res.status(200).json({
+                msg: 'dislike Removed',
+                dislikeStatus : false,
+                likeStatus : comment.likedBy.includes(userId)
+            })
+        }
+
+        comment.dislikedBy.push(userId)
+        await comment.save()
+        return res.status(200).json({
+            msg: 'dislike Success',
+            dislikeStatus : true,
+            likeStatus : comment.likedBy.includes(userId)
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).json({
+            error: err.message
+        })
+    }
+}
+
 
 const deleteById = async (req, res) => {
     try {
@@ -205,7 +250,7 @@ const commentLikeStatus = async (req, res) => {
         const videoId = req.params.videoId
         var comments = await Comment.find({ videoId: videoId }).select('-likedBy -dislikedBy').populate('commentBy', '_id channelName profilePicUrl')
         // console.log(comments)
-        var newCommentLikes = []
+        var newUpdatedComments = []
         if (req.headers.authorization) {
             const token = req.headers.authorization.split(' ')[1]
             const tokenData = jwt.verify(token, process.env.SEC_KEY)
@@ -218,7 +263,7 @@ const commentLikeStatus = async (req, res) => {
             // console.log(newComments.likedBy)
 
 
-            newCommentLikes = await newComments.map(comment => (
+            newUpdatedComments = newComments.map(comment => (
                 {
                     ...comment._doc,
                     isLike: comment.likedBy.some(c => c.toString() === userId.toString()),
@@ -226,27 +271,29 @@ const commentLikeStatus = async (req, res) => {
                 }
             ))
 
-            newCommentLikes = newCommentLikes.map(comment => {
+            newUpdatedComments = newUpdatedComments.map(comment => {
                 const { likedBy, dislikedBy, ...rest } = comment
                 return rest
             })
 
-            // console.log(newCommentLikes)
+            // console.log(newUpdatedComments)
 
         }
         else {
-            newCommentLikes = await comments.map(comment => (
+
+            // console.log('without auth called')
+            newUpdatedComments = await comments.map(comment => (
                 {
                     ...comment._doc,
                     isLike: false,
                     isDislike: false
                 }
             ))
-            // console.log(newCommentLikes)
+            // console.log(newUpdatedComments)
         }
 
         return res.status(200).json({
-            comments: newCommentLikes
+            comments: newUpdatedComments
         })
     }
     catch (err) {
