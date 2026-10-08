@@ -140,23 +140,26 @@ const likeUnlike = async (req, res) => {
 
         if (comment.likedBy.includes(userId)) {
             comment.likedBy.pull(userId)
-            comment.likeCount -=1
+            comment.likeCount -= 1
             await comment.save()
             return res.status(200).json({
                 msg: 'Like Removed',
-                likeStatus : false,
-                dislikeStatus : comment.dislikedBy.includes(userId)
+                likeStatus: false,
+                dislikeStatus: comment.dislikedBy.includes(userId)
             })
         }
 
         comment.likeCount += 1
 
         comment.likedBy.push(userId)
+        if (comment.dislikedBy.includes(userId)) {
+            comment.dislikedBy.pull(userId)
+        }
         await comment.save()
         return res.status(200).json({
             msg: 'Like Success',
-            likeStatus : true,
-            dislikeStatus : comment.dislikedBy.includes(userId)
+            likeStatus: true,
+            dislikeStatus: comment.dislikedBy.includes(userId)
         })
     }
     catch (err) {
@@ -187,18 +190,21 @@ const dislikeUndislike = async (req, res) => {
             await comment.save()
             return res.status(200).json({
                 msg: 'dislike Removed',
-                dislikeStatus : false,
-                likeStatus : comment.likedBy.includes(userId)
+                dislikeStatus: false,
+                likeStatus: comment.likedBy.includes(userId)
             })
         }
 
         comment.dislikedBy.push(userId)
         comment.dislikeCount += 1
+        if (comment.likedBy.includes(userId)) {
+            comment.likedBy.pull(userId)
+        }
         await comment.save()
         return res.status(200).json({
             msg: 'dislike Success',
-            dislikeStatus : true,
-            likeStatus : comment.likedBy.includes(userId)
+            dislikeStatus: true,
+            likeStatus: comment.likedBy.includes(userId)
         })
     }
     catch (err) {
@@ -307,4 +313,4 @@ const commentLikeStatus = async (req, res) => {
 }
 
 
-module.exports = { uploadComment, commentsByVideoId, commentBycommentId, editComment, likeUnlike ,dislikeUndislike, deleteById, commentLikeStatus }
+module.exports = { uploadComment, commentsByVideoId, commentBycommentId, editComment, likeUnlike, dislikeUndislike, deleteById, commentLikeStatus }
