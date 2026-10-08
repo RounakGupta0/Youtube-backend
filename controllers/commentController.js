@@ -145,7 +145,9 @@ const likeUnlike = async (req, res) => {
             return res.status(200).json({
                 msg: 'Like Removed',
                 likeStatus: false,
-                dislikeStatus: comment.dislikedBy.includes(userId)
+                dislikeStatus: comment.dislikedBy.includes(userId),
+                likeCount: comment.likeCount,
+                dislikeCount: comment.dislikeCount
             })
         }
 
@@ -154,13 +156,15 @@ const likeUnlike = async (req, res) => {
         comment.likedBy.push(userId)
         if (comment.dislikedBy.includes(userId)) {
             comment.dislikedBy.pull(userId)
-            comment.dislikeCount -=1
+            comment.dislikeCount -= 1
         }
         await comment.save()
         return res.status(200).json({
             msg: 'Like Success',
             likeStatus: true,
-            dislikeStatus: comment.dislikedBy.includes(userId)
+            dislikeStatus: comment.dislikedBy.includes(userId),
+            likeCount: comment.likeCount,
+            dislikeCount: comment.dislikeCount
         })
     }
     catch (err) {
@@ -192,7 +196,9 @@ const dislikeUndislike = async (req, res) => {
             return res.status(200).json({
                 msg: 'dislike Removed',
                 dislikeStatus: false,
-                likeStatus: comment.likedBy.includes(userId)
+                likeStatus: comment.likedBy.includes(userId),
+                likeCount: comment.likeCount,
+                dislikeCount: comment.dislikeCount
             })
         }
 
@@ -200,13 +206,15 @@ const dislikeUndislike = async (req, res) => {
         comment.dislikeCount += 1
         if (comment.likedBy.includes(userId)) {
             comment.likedBy.pull(userId)
-            comment.dislikeCount -=1 
+            comment.dislikeCount -= 1
         }
         await comment.save()
         return res.status(200).json({
             msg: 'dislike Success',
             dislikeStatus: true,
-            likeStatus: comment.likedBy.includes(userId)
+            likeStatus: comment.likedBy.includes(userId),
+            likeCount: comment.likeCount,
+            dislikeCount: comment.dislikeCount
         })
     }
     catch (err) {
