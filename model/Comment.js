@@ -27,7 +27,8 @@ const commentSchema = new mongoose.Schema({
 
     likeCount: {
         type: Number,
-        default : 0
+        default : 0,
+        min : 0
     },
 
     dislikedBy: [{
@@ -37,7 +38,8 @@ const commentSchema = new mongoose.Schema({
 
     dislikeCount: {
         type: Number,
-        default : 0
+        default : 0,
+        min : 0
     },
 
     parentComment: {

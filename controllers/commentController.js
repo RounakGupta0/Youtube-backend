@@ -100,7 +100,7 @@ const editComment = async (req, res) => {
             })
         }
 
-        if (userId != comment.commentBy.toString()) {
+        if (userId.toString() !== comment.commentBy.toString()) {
             return res.status(401).json({
                 msg: 'Not Authorized'
             })
@@ -242,9 +242,9 @@ const deleteById = async (req, res) => {
             })
         }
 
-        console.log(userId.toString())
+        // console.log(userId.toString())
         // console.log(comment.videoId.uploadedBy)
-        console.log(comment.commentBy.toString())
+        // console.log(comment.commentBy.toString())
 
         if (comment.commentBy.toString() !== userId.toString() && comment.videoId.uploadedBy.toString() !== userId.toString()) {
             return res.status(404).json({
