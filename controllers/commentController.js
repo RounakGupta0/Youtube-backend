@@ -93,7 +93,7 @@ const editComment = async (req, res) => {
         const tokenData = jwt.verify(token, process.env.SEC_KEY)
         const userId = tokenData._id
 
-        const comment = await Comment.findById(commentId)
+        const comment = await Comment.findById(commentId).select('-dislikedBy -likedBy')
         if (!comment) {
             return res.status(400).json({
                 msg: 'Comment Not found'
