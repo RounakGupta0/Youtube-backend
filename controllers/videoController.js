@@ -1,5 +1,6 @@
 const Video = require('../model/Video')
 const jwt = require('jsonwebtoken')
+const User = require('../model/User')
 const cloudinary = require('../configure/cloudinary')
 const { subscribe } = require('../Routes/video')
 
@@ -257,14 +258,17 @@ const byChannelId = async (req, res) => {
     try {
         const channelId = req.params.channelId
 
-        const videos = await Video.find({ uploadedBy: channelId }).select('_id title description videoUrl views likeCount dislikeCount tags category createdAt thumbnailUrl ').populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
+        const videos = await Video.find({ uploadedBy: channelId }).select('_id title description videoUrl views tags category createdAt thumbnailUrl ')
         if (videos.length == 0) {
             return res.status(401).json({
                 msg: 'No video Uploaded Till now on this channel'
             })
         }
 
+        const channel = await User.findById(channelId).select('_id channelName  coverPicUrl profilePicUrl subscriberCount description email')
+
         res.status(200).json({
+            channel : channel,
             videos: videos
         })
 

@@ -96,7 +96,7 @@ const editComment = async (req, res) => {
         const comment = await Comment.findById(commentId).select('-dislikedBy -likedBy')
         if (!comment) {
             return res.status(400).json({
-                msg: 'Comment Not found'
+                msg: 'Comment Not found' 
             })
         }
 
