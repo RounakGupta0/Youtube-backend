@@ -259,11 +259,11 @@ const byChannelId = async (req, res) => {
         const channelId = req.params.channelId
 
         const videos = await Video.find({ uploadedBy: channelId }).select('_id title description videoUrl views tags category createdAt thumbnailUrl ')
-        if (videos.length == 0) {
-            return res.status(401).json({
-                msg: 'No video Uploaded Till now on this channel'
-            })
-        }
+        // if (videos.length == 0) {
+        //     return res.status(401).json({
+        //         msg: 'No video Uploaded Till now on this channel'
+        //     })
+        // }
 
         const channel = await User.findById(channelId).select('_id channelName  coverPicUrl profilePicUrl subscriberCount description email')
 
