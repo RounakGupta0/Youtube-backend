@@ -304,7 +304,7 @@ const editVideo = async (req, res) => {
         // console.log('thumbnailUrl',video.thumbnailUrl)
         // console.log('thumbnailId',video.thumbnailPublicId)
 
-        console.log(req.files.thumbnail)
+        // console.log(req.files.thumbnail)
 
         if (req.files && req.files.thumbnail) {
             if (video.thumbnailUrl) {
@@ -317,7 +317,6 @@ const editVideo = async (req, res) => {
                 video.thumbnailUrl = newThumbnail.secure_url
                 video.thumbnailPublicId = newThumbnail.public_id
             }
-
         }
 
         // console.log(video.thumbnailUrl)
