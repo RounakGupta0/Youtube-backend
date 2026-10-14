@@ -259,17 +259,28 @@ const byChannelId = async (req, res) => {
         const channelId = req.params.channelId
 
         const videos = await Video.find({ uploadedBy: channelId }).select('_id title description videoUrl views tags category createdAt thumbnailUrl ')
-        // if (videos.length == 0) {
-        //     return res.status(401).json({
-        //         msg: 'No video Uploaded Till now on this channel'
-        //     })
-        // }
 
         const channel = await User.findById(channelId).select('_id channelName  coverPicUrl profilePicUrl subscriberCount description email')
 
+        let subscribeStatus = false
+
+        if (req.headers.authorization) {
+            const token = req.headers.authorization.split(' ')[1]
+            const tokenData = jwt.verify(token, process.env.SEC_KEY)
+            const userId = tokenData._id
+
+            let channelData = User.findById(channelId)
+
+            const isSubscribed = channelData.subscribers.includes(userId)
+            if (isSubscribed) {
+                subscribeStatus = true
+            }
+        }
+
         res.status(200).json({
             channel: channel,
-            videos: videos
+            videos: videos,
+            subscribeStatus: subscribeStatus
         })
 
     }
@@ -301,10 +312,9 @@ const editVideo = async (req, res) => {
             })
         }
 
-        if (!req.body.title && !req.body.description && !req.body.tags && !req.body.category )
-        {
+        if (!req.body.title && !req.body.description && !req.body.tags && !req.body.category) {
             return res.status(400).json({
-                msg : 'This Field is required'
+                msg: 'This Field is required'
             })
         }
 
