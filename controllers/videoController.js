@@ -301,6 +301,13 @@ const editVideo = async (req, res) => {
             })
         }
 
+        if (!req.body.title && !req.body.description && !req.body.tags && !req.body.category )
+        {
+            return res.status(400).json({
+                msg : 'This Field is required'
+            })
+        }
+
         // console.log('thumbnailUrl',video.thumbnailUrl)
         // console.log('thumbnailId',video.thumbnailPublicId)
 
