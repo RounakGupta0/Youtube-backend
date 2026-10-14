@@ -306,7 +306,7 @@ const editVideo = async (req, res) => {
 
         console.log(req.files.thumbnail)
 
-        if (req.files || req.files.thumbnail) {
+        if (req.files && req.files.thumbnail) {
             if (video.thumbnailUrl) {
                 await cloudinary.uploader.destroy(video.thumbnailPublicId)
                 const newThumbnail = await cloudinary.uploader.upload(req.files.thumbnail.tempFilePath, {
