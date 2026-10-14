@@ -214,7 +214,7 @@ const dislike = async (req, res) => {
 const videoById = async (req, res) => {
     try {
         const videoId = req.params.videoId
-        const video = await Video.findById(videoId).select('_id title description videoUrl videoPublicId views likeCount dislikeCount tags category createdAt').populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
+        const video = await Video.findById(videoId).select('_id title description videoUrl videoPublicId views likeCount dislikeCount tags category createdAt thumbnailUrl').populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
         if (!video) {
             return res.status(401).json({
                 msg: 'Video Not Found'
