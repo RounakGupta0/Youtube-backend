@@ -220,8 +220,8 @@ const videoById = async (req, res) => {
                 msg: 'Video Not Found'
             })
         }
-        video.views += 1
-        await video.save()
+        // video.views += 1
+        // await video.save()
 
         return res.status(200).json({
             video: video
