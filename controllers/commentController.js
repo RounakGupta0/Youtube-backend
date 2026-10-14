@@ -206,7 +206,7 @@ const dislikeUndislike = async (req, res) => {
         comment.dislikeCount += 1
         if (comment.likedBy.includes(userId)) {
             comment.likedBy.pull(userId)
-            comment.dislikeCount -= 1
+            comment.likeCount -= 1
         }
         await comment.save()
         return res.status(200).json({
