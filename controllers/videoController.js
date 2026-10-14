@@ -134,7 +134,7 @@ const like = async (req, res) => {
             return res.status(200).json({
                 msg: 'Like Removed',
                 likeCount: video.likeCount,
-                likeStatus : false
+                likeStatus: false
             })
         }
 
@@ -149,7 +149,7 @@ const like = async (req, res) => {
         res.status(200).json({
             msg: 'Video Liked',
             likeCount: savedVideo.likeCount,
-            likeStatus : true
+            likeStatus: true
         })
     }
     catch (err) {
@@ -182,8 +182,8 @@ const dislike = async (req, res) => {
             return res.status(200).json({
                 msg: 'dislike Removed',
                 dislikeCount: video.dislikeCount,
-                likeCount : video.likeCount,
-                dislikeStatus : false
+                likeCount: video.likeCount,
+                dislikeStatus: false
             })
         }
 
@@ -199,8 +199,8 @@ const dislike = async (req, res) => {
         res.status(200).json({
             msg: 'Video Disliked',
             dislikeCount: savedVideo.dislikeCount,
-            likeCount : savedVideo.likeCount,
-            dislikeStatus : true
+            likeCount: savedVideo.likeCount,
+            dislikeStatus: true
         })
     }
     catch (err) {
@@ -214,7 +214,7 @@ const dislike = async (req, res) => {
 const videoById = async (req, res) => {
     try {
         const videoId = req.params.videoId
-        const video = await Video.findById(videoId).select('_id title description videoUrl videoPublicId views likeCount dislikeCount tags category createdAt thumbnailUrl').populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
+        const video = await Video.findById(videoId).select('_id title description videoUrl views tags category createdAt thumbnailUrl').populate('uploadedBy', 'profilePicUrl _id channelName subscriberCount')
         if (!video) {
             return res.status(401).json({
                 msg: 'Video Not Found'
@@ -268,7 +268,7 @@ const byChannelId = async (req, res) => {
         const channel = await User.findById(channelId).select('_id channelName  coverPicUrl profilePicUrl subscriberCount description email')
 
         res.status(200).json({
-            channel : channel,
+            channel: channel,
             videos: videos
         })
 
@@ -301,6 +301,28 @@ const editVideo = async (req, res) => {
             })
         }
 
+        // console.log('thumbnailUrl',video.thumbnailUrl)
+        // console.log('thumbnailId',video.thumbnailPublicId)
+
+        console.log(req.files.thumbnail)
+
+        if (req.files || req.files.thumbnail) {
+            if (video.thumbnailUrl) {
+                await cloudinary.uploader.destroy(video.thumbnailPublicId)
+                const newThumbnail = await cloudinary.uploader.upload(req.files.thumbnail.tempFilePath, {
+                    resource_type: 'image',
+                    folder: 'youtube/thumbnail'
+                })
+
+                video.thumbnailUrl = newThumbnail.secure_url
+                video.thumbnailPublicId = newThumbnail.public_id
+            }
+
+        }
+
+        // console.log(video.thumbnailUrl)
+        // console.log(video.thumbnailPublicId)
+
         const newVideo = {
             videoUrl: video.videoUrl,
             videoPublicId: video.videoPublicId,
@@ -319,7 +341,7 @@ const editVideo = async (req, res) => {
         }
 
         const newVideoRes = await Video.findByIdAndUpdate(videoId, newVideo, { new: true })
-        console.log(newVideoRes)
+        // console.log(newVideoRes)
         res.status(200).json({
             newVideo: newVideoRes
         })
