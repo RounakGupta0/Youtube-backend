@@ -1,6 +1,6 @@
 const express = require('express')
 const Router = express.Router()
-const {signup,login, subscribe,unsubscribe,uploadProfilePic,uploadProfileCoverPic,watchLater,updateUserDetails}  = require('../controllers/userController')
+const {signup,login, subscribe,unsubscribe,uploadProfilePic,uploadProfileCoverPic,watchLater,updateUserDetails,getChannelDetails}  = require('../controllers/userController')
 
 Router.post('/signup',signup)
 Router.post('/login',login)
@@ -10,5 +10,6 @@ Router.put('/uploadProfilePic',uploadProfilePic)
 Router.put('/uploadCoverPic',uploadProfileCoverPic)
 Router.put('/watchLater/:videoId',watchLater)
 Router.put('/updateProfile',updateUserDetails)
+Router.get('/channelDetails/:channelId',getChannelDetails)
 
 module.exports = Router

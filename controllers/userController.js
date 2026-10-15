@@ -345,5 +345,20 @@ const watchLater = async (req, res) => {
     }
 }
 
+const getChannelDetails = async(req,res) => {
+    try
+    {
+        const channelId = req.params.channelId
+        const channelData = await User.findById(channelId).select('_id channelName email description profilePicUrl coverPicUrl subscriberCount')
 
-module.exports = { signup, login, subscribe, unsubscribe, uploadProfilePic, uploadProfileCoverPic, watchLater, updateUserDetails}
+        res.status(200).json({
+            channel : channelData
+        })
+    }
+    catch(err)
+    {
+
+    }
+}
+
+module.exports = { signup, login, subscribe, unsubscribe, uploadProfilePic, uploadProfileCoverPic, watchLater, updateUserDetails, getChannelDetails}
