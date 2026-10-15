@@ -37,7 +37,7 @@ const signup = async (req, res) => {
     catch (err) {
         console.log(err)
         res.status(500).json({
-            error : err.message
+            error: err.message
         })
     }
 }
@@ -71,7 +71,7 @@ const login = async (req, res) => {
 
         res.status(200).json({
             channelName: checkEmail.channelName,
-            channelId : checkEmail._id,
+            channelId: checkEmail._id,
             token: token
         })
     }
@@ -126,7 +126,7 @@ const subscribe = async (req, res) => {
         res.status(200).json({
             msg: 'Subscribed',
             subscriberCount: channel.subscriberCount,
-            subscribeStatus : true
+            subscribeStatus: true
         })
 
     }
@@ -268,18 +268,62 @@ const uploadProfileCoverPic = async (req, res) => {
     }
 }
 
-const watchLater = async(req,res) => {
-    try
-    {
+const updateUserDetails = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const tokenData = jwt.verify(token, process.env.SEC_KEY)
+        const userId = tokenData._id
+
+        const channelData = await User.findById(userId)
+        if (!channelData) {
+            return res.status(400).json({
+                msg: 'Channel Not Found'
+            })
+        }
+
+        if (!req.body.channelName || !req.body.password || !req.body.description) {
+            return res.status(401).json({
+                msg: 'These field is required'
+            })
+        }
+
+        const verifyPass = await bcrypt.compare(req.body.password, channelData.password)
+        if (!verifyPass) {
+            return res.status(401).json({
+                msg: "email and password doesn't match"
+            })
+        }
+
+        if (req.body.newPassword) {
+            channelData.password = await bcrypt.hash(req.body.newPassword, 10)
+        }
+
+
+        channelData.channelName = req.body.channelName
+        // channelData.email = channelData.email
+        channelData.password = channelData.password
+        channelData.description = req.body.description
+
+        await channelData.save()
+        res.status(200).json({
+            msg : 'changes done'
+        })
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+
+const watchLater = async (req, res) => {
+    try {
         const videoId = req.params.videoId
         const token = req.headers.authorization.split(' ')[1]
         const tokenData = jwt.verify(token, process.env.SEC_KEY)
 
         const video = await Video.findById(videoId)
-        if (!video)
-        {
+        if (!video) {
             res.status(400).json({
-                msg : 'Video Not Found'
+                msg: 'Video Not Found'
             })
         }
 
@@ -289,18 +333,17 @@ const watchLater = async(req,res) => {
         await channel.save()
 
         res.status(200).json({
-            msg : 'Video Added to Watch Later'
+            msg: 'Video Added to Watch Later'
         })
 
     }
-    catch(err)
-    {
+    catch (err) {
         console.log(err)
         res.status(500).json({
-            error : err
+            error: err
         })
     }
 }
 
 
-module.exports = { signup, login, subscribe, unsubscribe, uploadProfilePic, uploadProfileCoverPic, watchLater}
+module.exports = { signup, login, subscribe, unsubscribe, uploadProfilePic, uploadProfileCoverPic, watchLater, updateUserDetails}
